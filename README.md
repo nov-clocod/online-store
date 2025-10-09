@@ -1,4 +1,4 @@
-# Project Title
+# Online Store
 
 ## Description of the Project
 
