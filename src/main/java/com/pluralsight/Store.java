@@ -27,7 +27,7 @@ public class Store {
             System.out.println("1. Show Products");
             System.out.println("2. Show Cart");
             System.out.println("3. Exit");
-            System.out.print("Your choice: ");
+            System.out.print("Your choice: \n");
 
             if (!scanner.hasNextInt()) {
                 System.out.println("Please enter 1, 2, or 3.");
@@ -85,8 +85,35 @@ public class Store {
     public static void displayProducts(ArrayList<Product> inventory,
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
-        // TODO: show each product (id, name, price),
-        //       prompt for an id, find that product, add to cart
+
+        System.out.println("Products");
+        System.out.println("--------");
+        for (Product product : inventory) {
+            System.out.println(product);
+        }
+
+        System.out.println("\nEnter the sku/id of the product you want to add to cart or ('X' to return): ");
+        String userInputSku = scanner.nextLine().trim().toLowerCase();
+
+        if (userInputSku.equalsIgnoreCase("x")) {
+            System.out.println("Returning to main menu");
+        } else {
+
+            boolean found = false;
+
+            for (Product product : inventory) {
+                if (product.getSku().toLowerCase().contains(userInputSku)) {
+                    cart.add(new Product(product.getSku(), product.getProductName(), product.getPrice()));
+                    System.out.println("Added \""+ product.getProductName() + "\" to your cart!");
+                    found = true;
+
+                }
+            }
+
+            if (!found) {
+                System.out.println("We don't have that product that you entered: " + userInputSku);
+            }
+        }
     }
 
     /**
