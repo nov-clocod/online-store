@@ -1,4 +1,6 @@
 package com.pluralsight;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -54,8 +56,26 @@ public class Store {
      * A17|Wireless Mouse|19.99
      */
     public static void loadInventory(String fileName, ArrayList<Product> inventory) {
-        // TODO: read each line, split on "|",
-        //       create a Product object, and add it to the inventory list
+
+        try {
+            BufferedReader myReader = new BufferedReader(new FileReader(fileName));
+            String line;
+
+            while ((line = myReader.readLine()) != null) {
+                String[] section = line.split("\\|");
+                String sku = section[0];
+                String productName = section[1];
+                double price = Double.parseDouble(section[2]);
+
+                inventory.add(new Product(sku, productName, price));
+            }
+
+            myReader.close();
+
+        } catch (Exception exception) {
+            System.out.println("Error reading the file");
+            System.out.println(exception.getMessage());
+        }
     }
 
     /**
