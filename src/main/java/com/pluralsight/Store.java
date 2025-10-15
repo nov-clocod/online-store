@@ -4,10 +4,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Starter code for the Online Store workshop.
- * Students will complete the TODO sections to make the program work.
- */
 public class Store {
 
     public static void main(String[] args) {
@@ -27,7 +23,7 @@ public class Store {
             System.out.println("1. Show Products");
             System.out.println("2. Show Cart");
             System.out.println("3. Exit");
-            System.out.print("Your choice: \n");
+            System.out.println("Your choice: ");
 
             if (!scanner.hasNextInt()) {
                 System.out.println("Please enter 1, 2, or 3.");
@@ -86,7 +82,7 @@ public class Store {
                                        ArrayList<Product> cart,
                                        Scanner scanner) {
 
-        System.out.println("Products");
+        System.out.println("\nProducts");
         System.out.println("--------");
         for (Product product : inventory) {
             System.out.println(product);
@@ -126,6 +122,25 @@ public class Store {
         //   • compute the total cost
         //   • ask the user whether to check out (C) or return (X)
         //   • if C, call checkOut(cart, totalAmount, scanner)
+
+        System.out.println("\nYour cart");
+        System.out.println("---------");
+
+        double totalPrice = 0;
+
+        for (Product product : cart) {
+            System.out.println(product.getProductName() + " $" + product.getPrice());
+            totalPrice += product.getPrice();
+        }
+
+        System.out.println("Total Amount: $" + totalPrice);
+
+        System.out.println("\nPress 'C' to checkout, Press 'X' to return to menu");
+        String checkoutOrReturn = scanner.nextLine().trim();
+
+        if (checkoutOrReturn.equalsIgnoreCase("c")) {
+            checkOut(cart, totalPrice, scanner);
+        }
     }
 
     /**
@@ -139,6 +154,32 @@ public class Store {
                                 double totalAmount,
                                 Scanner scanner) {
         // TODO: implement steps listed above
+        System.out.println("Total amount owed: $" + totalAmount);
+
+        System.out.println("Proceed with purchase? (Y/N)");
+        String purchase = scanner.nextLine().trim();
+
+        if (purchase.equalsIgnoreCase("y")) {
+            System.out.print("Enter payment amount: $");
+            double customerPayment = scanner.nextDouble();
+            scanner.nextLine();
+
+            double customerChange = customerPayment - totalAmount;
+
+            if (customerChange < 0) {
+                System.out.println("Sorry that is not enough, returning your payment");
+            } else {
+                System.out.println("Change: $" + customerChange);
+                System.out.println("\nItems purchased:");
+
+                for (Product product : cart) {
+                    System.out.println("• " + product.getProductName() + " $" + product.getPrice());
+                }
+
+                cart.clear();
+                System.out.println("Thank you for your purchase!\n");
+            }
+        }
     }
 
     /**
