@@ -1,7 +1,9 @@
 package com.pluralsight;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class Store {
@@ -128,10 +130,15 @@ public class Store {
 
         double totalPrice = 0;
 
-        for (Product product : cart) {
-            System.out.println(product.getProductName() + " $" + product.getPrice());
+        //still under development
+/*        for (Product product : cart) {
+            String productCompared = product.getSku();
+            int productQuantity = 0;
+            int numberOfProduct = Collections.frequency(cart, productCompared) + 1;
+
+            System.out.println(numberOfProduct + "x " + product.getProductName() + " $" + product.getPrice());
             totalPrice += product.getPrice();
-        }
+        }*/
 
         System.out.println("Total Amount: $" + totalPrice);
 
@@ -169,12 +176,18 @@ public class Store {
             if (customerChange < 0) {
                 System.out.println("Sorry that is not enough, returning your payment");
             } else {
-                System.out.println("Change: $" + customerChange);
+                System.out.println("Order Date: " + LocalDate.now());
                 System.out.println("\nItems purchased:");
 
                 for (Product product : cart) {
-                    System.out.println("• " + product.getProductName() + " $" + product.getPrice());
+                    int quantity = 1;
+                    System.out.println(quantity + " " + product.getProductName() + " $" + product.getPrice());
+
                 }
+
+                System.out.println("Sales Total: " + totalAmount);
+                System.out.println("Amount Paid: " + customerPayment);
+                System.out.println("Change Given: $" + customerChange);
 
                 cart.clear();
                 System.out.println("Thank you for your purchase!\n");
@@ -189,6 +202,13 @@ public class Store {
      */
     public static Product findProductById(String id, ArrayList<Product> inventory) {
         // TODO: loop over the list and compare ids
+
+        for (Product product : inventory) {
+            if (product.getSku().equalsIgnoreCase(id)) {
+                return product;
+            }
+        }
+
         return null;
     }
 }
