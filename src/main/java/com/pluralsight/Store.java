@@ -1,9 +1,9 @@
 package com.pluralsight;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class Store {
@@ -140,6 +140,11 @@ public class Store {
             totalPrice += product.getPrice();
         }*/
 
+        for (Product product : cart) {
+            System.out.println(product.getProductName() + " $" + product.getPrice());
+            totalPrice += product.getPrice();
+        }
+
         System.out.println("Total Amount: $" + totalPrice);
 
         System.out.println("\nPress 'C' to checkout, Press 'X' to return to menu");
@@ -180,17 +185,45 @@ public class Store {
                 System.out.println("\nItems purchased:");
 
                 for (Product product : cart) {
-                    int quantity = 1;
-                    System.out.println(quantity + " " + product.getProductName() + " $" + product.getPrice());
-
+                    System.out.println(product.getProductName() + " $" + product.getPrice());
                 }
 
                 System.out.println("Sales Total: " + totalAmount);
-                System.out.println("Amount Paid: " + customerPayment);
-                System.out.println("Change Given: $" + customerChange);
+                System.out.printf("Amount Paid: $%.2f", customerPayment);
+                System.out.printf("\nChange Given: %.2f\n", customerChange);
+
+                try {
+                    //Make Folder
+                    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+                    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmm");
+                    String formattedCurrentDate = LocalDate.now().format(dateFormat);
+                    String formattedCurrentTime = LocalTime.now().format(timeFormat);
+                    String formattedCustomerPayment = String.format("%.2f", customerPayment);
+                    String formattedCustomerChange = String.format("%.2f", customerChange);
+
+                    //Manually saving it to the same file for testing
+                    String fileName = formattedCurrentDate + formattedCurrentTime + ".txt";
+                    BufferedWriter myWriter = new BufferedWriter(new FileWriter("202510191041.txt"));
+
+                    myWriter.write("Order Date: " + LocalDate.now() + "\n");
+                    myWriter.write("Items purchased:\n\n");
+
+                    for (Product product : cart) {
+                        myWriter.write(product.getProductName() + " $" + product.getPrice() + "\n");
+                    }
+
+                    myWriter.write("\nSales Total: " + totalAmount + "\n");
+                    myWriter.write("Amount Paid: " + formattedCustomerPayment + "\n");
+                    myWriter.write("Change Given: $" + formattedCustomerChange + "\n");
+
+                    myWriter.close();
+                } catch (Exception exception) {
+                    System.out.println("Error occurred while writing the file");
+                    System.err.println(exception.getMessage());
+                }
 
                 cart.clear();
-                System.out.println("Thank you for your purchase!\n");
+                System.out.println("Thank you for your purchase!");
             }
         }
     }
