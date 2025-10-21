@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Store {
+
+    private static final HashMap<String, Integer> productsWithQuantity = new HashMap<>();
 
     public static void main(String[] args) {
 
@@ -38,7 +41,7 @@ public class Store {
             switch (choice) {
                 case 1 -> displayProducts(inventory, cart, scanner);
                 case 2 -> displayCart(cart, scanner);
-                case 3 -> System.out.println("Thank you for shopping with us!");
+                case 3 -> System.out.println("\nThank you for shopping with us!");
                 default -> System.out.println("Invalid choice!");
             }
         }
@@ -97,20 +100,15 @@ public class Store {
             System.out.println("Returning to main menu");
         } else {
 
-            boolean found = false;
+            Product productFound = findProductById(userInputSku, inventory);
 
-            for (Product product : inventory) {
-                if (product.getSku().toLowerCase().contains(userInputSku)) {
-                    cart.add(new Product(product.getSku(), product.getProductName(), product.getPrice()));
-                    System.out.println("Added \""+ product.getProductName() + "\" to your cart!");
-                    found = true;
-
-                }
-            }
-
-            if (!found) {
+            if (productFound != null) {
+                cart.add(productFound);
+                System.out.println("Added \""+ productFound.getProductName() + "\" to your cart!");
+            } else {
                 System.out.println("We don't have that product that you entered: " + userInputSku);
             }
+
         }
     }
 
@@ -130,19 +128,19 @@ public class Store {
 
         double totalPrice = 0;
 
-        //still under development
-/*        for (Product product : cart) {
-            String productCompared = product.getSku();
-            int productQuantity = 0;
-            int numberOfProduct = Collections.frequency(cart, productCompared) + 1;
-
-            System.out.println(numberOfProduct + "x " + product.getProductName() + " $" + product.getPrice());
-            totalPrice += product.getPrice();
-        }*/
-
         for (Product product : cart) {
-            System.out.println(product.getProductName() + " $" + product.getPrice());
+            productsWithQuantity.put(product.getProductName(),
+                    productsWithQuantity.getOrDefault(product.getProductName(), 0) + 1);
             totalPrice += product.getPrice();
+        }
+
+        for (String s : productsWithQuantity.keySet()) {
+            System.out.println(productsWithQuantity.get(s) + "x " + s);
+        }
+
+        if (totalPrice == 0) {
+            System.out.println("Your cart is empty, Returning to home screen");
+            return;
         }
 
         System.out.println("Total Amount: $" + totalPrice);
@@ -181,16 +179,16 @@ public class Store {
             if (customerChange < 0) {
                 System.out.println("Sorry that is not enough, returning your payment");
             } else {
-                System.out.println("Order Date: " + LocalDate.now());
+                System.out.println("\nOrder Date: " + LocalDate.now());
                 System.out.println("\nItems purchased:");
 
-                for (Product product : cart) {
-                    System.out.println(product.getProductName() + " $" + product.getPrice());
+                for (String s : productsWithQuantity.keySet()) {
+                    System.out.println(productsWithQuantity.get(s) + "x " + s);
                 }
 
-                System.out.println("Sales Total: " + totalAmount);
+                System.out.println("\nSales Total: " + totalAmount);
                 System.out.printf("Amount Paid: $%.2f", customerPayment);
-                System.out.printf("\nChange Given: %.2f\n", customerChange);
+                System.out.printf("\nChange Given: %.2f\n\n", customerChange);
 
                 try {
                     //Make Folder
@@ -208,8 +206,8 @@ public class Store {
                     myWriter.write("Order Date: " + LocalDate.now() + "\n");
                     myWriter.write("Items purchased:\n\n");
 
-                    for (Product product : cart) {
-                        myWriter.write(product.getProductName() + " $" + product.getPrice() + "\n");
+                    for (String s : productsWithQuantity.keySet()) {
+                        myWriter.write(productsWithQuantity.get(s) + "x " + s + "\n");
                     }
 
                     myWriter.write("\nSales Total: " + totalAmount + "\n");
@@ -223,6 +221,7 @@ public class Store {
                 }
 
                 cart.clear();
+                productsWithQuantity.clear();
                 System.out.println("Thank you for your purchase!");
             }
         }
