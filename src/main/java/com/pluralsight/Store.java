@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class Store {
 
+    //Storing product and quantity
     private static final HashMap<String, Integer> productsWithQuantity = new HashMap<>();
 
     public static void main(String[] args) {
@@ -20,7 +21,7 @@ public class Store {
         // Load inventory from the data file (pipe-delimited: id|name|price)
         loadInventory("products.csv", inventory);
 
-        //Make Folder
+        //Make Folder if it doesn't exist
         File receiptsFolder = new File("receiptsFolder");
 
         if (!receiptsFolder.exists()) {
@@ -98,6 +99,8 @@ public class Store {
 
         System.out.println("\nProducts");
         System.out.println("--------");
+
+        //Displays all products
         for (Product product : inventory) {
             System.out.println(product);
         }
@@ -109,6 +112,7 @@ public class Store {
             System.out.println("Returning to main menu");
         } else {
 
+            //Finds product with user input and store to a variable for reusability or returns null
             Product productFound = findProductById(userInputSku, inventory);
 
             if (productFound != null) {
@@ -130,14 +134,17 @@ public class Store {
         System.out.println("\nYour cart");
         System.out.println("---------");
 
+        //Declare total price in cart
         double totalPrice = 0;
 
+        //Loops cart and saves the product into hashmap for product name and updates quantity
         for (Product product : cart) {
             productsWithQuantity.put(product.getProductName(),
                     productsWithQuantity.getOrDefault(product.getProductName(), 0) + 1);
             totalPrice += product.getPrice();
         }
 
+        //Displays the products from hashmap
         for (String s : productsWithQuantity.keySet()) {
             System.out.println(productsWithQuantity.get(s) + "x " + s);
         }
@@ -173,6 +180,7 @@ public class Store {
         System.out.println("Proceed with purchase? (Y/N)");
         String purchase = scanner.nextLine().trim();
 
+        //Catches invalid inputs or errors
         try {
             if (purchase.equalsIgnoreCase("y")) {
                 System.out.print("Enter payment amount: $");
@@ -181,8 +189,9 @@ public class Store {
 
                 double customerChange = customerPayment - totalAmount;
 
+                //Checks if customer paid enough
                 if (customerChange < 0) {
-                    System.out.println("Sorry that is not enough, returning your payment");
+                    System.out.println("Sorry that is not enough, returning your payment and back to the main menu");
                 } else {
                     System.out.println("\nOrder Date: " + LocalDate.now());
                     System.out.println("\nItems purchased:");
@@ -195,17 +204,23 @@ public class Store {
                     System.out.printf("Amount Paid: $%.2f", customerPayment);
                     System.out.printf("\nChange Given: %.2f\n\n", customerChange);
 
+                    //Date and time formatters
                     DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
                     DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmm");
                     String formattedCurrentDate = LocalDate.now().format(dateFormat);
                     String formattedCurrentTime = LocalTime.now().format(timeFormat);
+
+                    //Payment and change formatting
                     String formattedCustomerPayment = String.format("%.2f", customerPayment);
                     String formattedCustomerChange = String.format("%.2f", customerChange);
 
-                    //Manually saving it to the same file for testing
+                    /*Manually saving it to the same file for testing
+                    Can convert to dynamically, just need to replace the hardcoded
+                    date + time.txt section to fileName variable*/
                     String fileName = formattedCurrentDate + formattedCurrentTime + ".txt";
                     BufferedWriter myWriter = new BufferedWriter(new FileWriter("receiptsFolder/202510191041.txt"));
 
+                    //Writes the sales information to the file
                     myWriter.write("Order Date: " + LocalDate.now() + "\n");
                     myWriter.write("Items purchased:\n\n");
 
@@ -217,8 +232,8 @@ public class Store {
                     myWriter.write("Amount Paid: " + formattedCustomerPayment + "\n");
                     myWriter.write("Change Given: $" + formattedCustomerChange + "\n");
 
+                    //Close writer, clear cart, and hashmap
                     myWriter.close();
-
                     cart.clear();
                     productsWithQuantity.clear();
 
