@@ -180,69 +180,73 @@ public class Store {
         System.out.println("Proceed with purchase? (Y/N)");
         String purchase = scanner.nextLine().trim();
 
+        //Checks user input to continue or go back to main menu
+        if (!purchase.equalsIgnoreCase("y")) {
+            System.out.println("Returning to main menu");
+            return;
+        }
+
         //Catches invalid inputs or errors
         try {
-            if (purchase.equalsIgnoreCase("y")) {
-                System.out.print("Enter payment amount: $");
-                double customerPayment = scanner.nextDouble();
-                scanner.nextLine();
+            System.out.print("Enter payment amount: $");
+            double customerPayment = scanner.nextDouble();
+            scanner.nextLine();
 
-                double customerChange = customerPayment - totalAmount;
+            double customerChange = customerPayment - totalAmount;
 
-                //Checks if customer paid enough
-                if (customerChange < 0) {
-                    System.out.println("Sorry that is not enough, returning your payment and back to the main menu");
-                } else {
-                    System.out.println("\nOrder Date: " + LocalDate.now());
-                    System.out.println("\nItems purchased:");
-
-                    for (String s : productsWithQuantity.keySet()) {
-                        System.out.println(productsWithQuantity.get(s) + "x " + s);
-                    }
-
-                    System.out.println("\nSales Total: " + totalAmount);
-                    System.out.printf("Amount Paid: $%.2f", customerPayment);
-                    System.out.printf("\nChange Given: %.2f\n\n", customerChange);
-
-                    //Date and time formatters
-                    DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
-                    DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmm");
-                    String formattedCurrentDate = LocalDate.now().format(dateFormat);
-                    String formattedCurrentTime = LocalTime.now().format(timeFormat);
-
-                    //Payment and change formatting
-                    String formattedCustomerPayment = String.format("%.2f", customerPayment);
-                    String formattedCustomerChange = String.format("%.2f", customerChange);
-
-                    /*Manually saving it to the same file for testing
-                    Can convert to dynamically, just need to replace the hardcoded
-                    date + time.txt section to fileName variable*/
-                    String fileName = formattedCurrentDate + formattedCurrentTime + ".txt";
-                    BufferedWriter myWriter = new BufferedWriter(new FileWriter("receiptsFolder/202510191041.txt"));
-
-                    //Writes the sales information to the file
-                    myWriter.write("Order Date: " + LocalDate.now() + "\n");
-                    myWriter.write("Items purchased:\n\n");
-
-                    for (String s : productsWithQuantity.keySet()) {
-                        myWriter.write(productsWithQuantity.get(s) + "x " + s + "\n");
-                    }
-
-                    myWriter.write("\nSales Total: " + totalAmount + "\n");
-                    myWriter.write("Amount Paid: " + formattedCustomerPayment + "\n");
-                    myWriter.write("Change Given: $" + formattedCustomerChange + "\n");
-
-                    //Close writer, clear cart, and hashmap
-                    myWriter.close();
-                    cart.clear();
-                    productsWithQuantity.clear();
-
-                    System.out.println("Thank you for your purchase!");
-                }
-
-            } else {
-                System.out.println("Returning to main menu");
+            //Checks if customer paid enough, if not it will return user to main menu
+            if (customerChange < 0) {
+                System.out.println("Sorry that is not enough, returning your payment and back to the main menu");
+                return;
             }
+
+            System.out.println("\nOrder Date: " + LocalDate.now());
+            System.out.println("\nItems purchased:");
+
+            for (String s : productsWithQuantity.keySet()) {
+                System.out.println(productsWithQuantity.get(s) + "x " + s);
+            }
+
+            System.out.println("\nSales Total: " + totalAmount);
+            System.out.printf("Amount Paid: $%.2f", customerPayment);
+            System.out.printf("\nChange Given: %.2f\n\n", customerChange);
+
+            //Date and time formatters
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
+            DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmm");
+            String formattedCurrentDate = LocalDate.now().format(dateFormat);
+            String formattedCurrentTime = LocalTime.now().format(timeFormat);
+
+            //Payment and change formatting
+            String formattedCustomerPayment = String.format("%.2f", customerPayment);
+            String formattedCustomerChange = String.format("%.2f", customerChange);
+
+            /*Manually saving it to the same file for testing
+            Can convert to dynamically, just need to replace the hardcoded
+            date + time.txt section to fileName variable*/
+            String fileName = formattedCurrentDate + formattedCurrentTime + ".txt";
+            BufferedWriter myWriter = new BufferedWriter(new FileWriter("receiptsFolder/202510191041.txt"));
+
+            //Writes the sales information to the file
+            myWriter.write("Order Date: " + LocalDate.now() + "\n");
+            myWriter.write("Items purchased:\n\n");
+
+            for (String s : productsWithQuantity.keySet()) {
+                myWriter.write(productsWithQuantity.get(s) + "x " + s + "\n");
+            }
+
+            myWriter.write("\nSales Total: " + totalAmount + "\n");
+            myWriter.write("Amount Paid: " + formattedCustomerPayment + "\n");
+            myWriter.write("Change Given: $" + formattedCustomerChange + "\n");
+
+            //Close writer, clear cart, and hashmap
+            myWriter.close();
+            cart.clear();
+            productsWithQuantity.clear();
+
+            System.out.println("Thank you for your purchase!");
+
+
         } catch (Exception exception) {
             scanner.nextLine();
             System.out.println("Error occurred check your inputs or file");
@@ -262,7 +266,6 @@ public class Store {
                 return product;
             }
         }
-
         return null;
     }
 }
