@@ -20,6 +20,15 @@ public class Store {
         // Load inventory from the data file (pipe-delimited: id|name|price)
         loadInventory("products.csv", inventory);
 
+        //Make Folder
+        File receiptsFolder = new File("receiptsFolder");
+
+        if (!receiptsFolder.exists()) {
+            if (receiptsFolder.mkdir()){
+                System.out.println("Receipts Folder Created!");
+            }
+        }
+
         // Main menu loop
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
@@ -117,11 +126,6 @@ public class Store {
      * and offers the option to check out.
      */
     public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
-        // TODO:
-        //   • list each product in the cart
-        //   • compute the total cost
-        //   • ask the user whether to check out (C) or return (X)
-        //   • if C, call checkOut(cart, totalAmount, scanner)
 
         System.out.println("\nYour cart");
         System.out.println("---------");
@@ -163,35 +167,34 @@ public class Store {
     public static void checkOut(ArrayList<Product> cart,
                                 double totalAmount,
                                 Scanner scanner) {
-        // TODO: implement steps listed above
+
         System.out.println("Total amount owed: $" + totalAmount);
 
         System.out.println("Proceed with purchase? (Y/N)");
         String purchase = scanner.nextLine().trim();
 
-        if (purchase.equalsIgnoreCase("y")) {
-            System.out.print("Enter payment amount: $");
-            double customerPayment = scanner.nextDouble();
-            scanner.nextLine();
+        try {
+            if (purchase.equalsIgnoreCase("y")) {
+                System.out.print("Enter payment amount: $");
+                double customerPayment = scanner.nextDouble();
+                scanner.nextLine();
 
-            double customerChange = customerPayment - totalAmount;
+                double customerChange = customerPayment - totalAmount;
 
-            if (customerChange < 0) {
-                System.out.println("Sorry that is not enough, returning your payment");
-            } else {
-                System.out.println("\nOrder Date: " + LocalDate.now());
-                System.out.println("\nItems purchased:");
+                if (customerChange < 0) {
+                    System.out.println("Sorry that is not enough, returning your payment");
+                } else {
+                    System.out.println("\nOrder Date: " + LocalDate.now());
+                    System.out.println("\nItems purchased:");
 
-                for (String s : productsWithQuantity.keySet()) {
-                    System.out.println(productsWithQuantity.get(s) + "x " + s);
-                }
+                    for (String s : productsWithQuantity.keySet()) {
+                        System.out.println(productsWithQuantity.get(s) + "x " + s);
+                    }
 
-                System.out.println("\nSales Total: " + totalAmount);
-                System.out.printf("Amount Paid: $%.2f", customerPayment);
-                System.out.printf("\nChange Given: %.2f\n\n", customerChange);
+                    System.out.println("\nSales Total: " + totalAmount);
+                    System.out.printf("Amount Paid: $%.2f", customerPayment);
+                    System.out.printf("\nChange Given: %.2f\n\n", customerChange);
 
-                try {
-                    //Make Folder
                     DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
                     DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HHmm");
                     String formattedCurrentDate = LocalDate.now().format(dateFormat);
@@ -201,7 +204,7 @@ public class Store {
 
                     //Manually saving it to the same file for testing
                     String fileName = formattedCurrentDate + formattedCurrentTime + ".txt";
-                    BufferedWriter myWriter = new BufferedWriter(new FileWriter("202510191041.txt"));
+                    BufferedWriter myWriter = new BufferedWriter(new FileWriter("receiptsFolder/202510191041.txt"));
 
                     myWriter.write("Order Date: " + LocalDate.now() + "\n");
                     myWriter.write("Items purchased:\n\n");
@@ -215,15 +218,20 @@ public class Store {
                     myWriter.write("Change Given: $" + formattedCustomerChange + "\n");
 
                     myWriter.close();
-                } catch (Exception exception) {
-                    System.out.println("Error occurred while writing the file");
-                    System.err.println(exception.getMessage());
+
+                    cart.clear();
+                    productsWithQuantity.clear();
+
+                    System.out.println("Thank you for your purchase!");
                 }
 
-                cart.clear();
-                productsWithQuantity.clear();
-                System.out.println("Thank you for your purchase!");
+            } else {
+                System.out.println("Returning to main menu");
             }
+        } catch (Exception exception) {
+            scanner.nextLine();
+            System.out.println("Error occurred check your inputs or file");
+            System.err.println(exception.getMessage());
         }
     }
 
@@ -233,7 +241,6 @@ public class Store {
      * @return the matching Product, or null if not found
      */
     public static Product findProductById(String id, ArrayList<Product> inventory) {
-        // TODO: loop over the list and compare ids
 
         for (Product product : inventory) {
             if (product.getSku().equalsIgnoreCase(id)) {
