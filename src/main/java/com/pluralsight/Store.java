@@ -221,11 +221,9 @@ public class Store {
             String formattedCustomerPayment = String.format("%.2f", customerPayment);
             String formattedCustomerChange = String.format("%.2f", customerChange);
 
-            /*Manually saving it to the same file for testing
-            Can convert to dynamically, just need to replace the hardcoded
-            date + time.txt section to fileName variable*/
+            //Create file
             String fileName = formattedCurrentDate + formattedCurrentTime + ".txt";
-            BufferedWriter myWriter = new BufferedWriter(new FileWriter("receiptsFolder/202510191041.txt"));
+            BufferedWriter myWriter = new BufferedWriter(new FileWriter("receiptsFolder/" + fileName));
 
             //Writes the sales information to the file
             myWriter.write("Order Date: " + LocalDate.now() + "\n");
